@@ -1,0 +1,8 @@
+c:\users\justin\documents\visual studio 2013\Projects\AllColorsImage\Runner\bin\Debug\Runner.exe.config
+c:\users\justin\documents\visual studio 2013\Projects\AllColorsImage\Runner\obj\Debug\Runner.csprojResolveAssemblyReference.cache
+c:\users\justin\documents\visual studio 2013\Projects\AllColorsImage\Runner\bin\Debug\Runner.exe
+c:\users\justin\documents\visual studio 2013\Projects\AllColorsImage\Runner\bin\Debug\Runner.pdb
+c:\users\justin\documents\visual studio 2013\Projects\AllColorsImage\Runner\bin\Debug\AllColorsImage.dll
+c:\users\justin\documents\visual studio 2013\Projects\AllColorsImage\Runner\bin\Debug\AllColorsImage.pdb
+c:\users\justin\documents\visual studio 2013\Projects\AllColorsImage\Runner\obj\Debug\Runner.exe
+c:\users\justin\documents\visual studio 2013\Projects\AllColorsImage\Runner\obj\Debug\Runner.pdb

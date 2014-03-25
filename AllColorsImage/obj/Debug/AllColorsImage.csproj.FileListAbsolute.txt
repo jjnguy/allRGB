@@ -1,0 +1,5 @@
+c:\users\justin\documents\visual studio 2013\Projects\AllColorsImage\AllColorsImage\obj\Debug\AllColorsImage.csprojResolveAssemblyReference.cache
+c:\users\justin\documents\visual studio 2013\Projects\AllColorsImage\AllColorsImage\bin\Debug\AllColorsImage.dll
+c:\users\justin\documents\visual studio 2013\Projects\AllColorsImage\AllColorsImage\bin\Debug\AllColorsImage.pdb
+c:\users\justin\documents\visual studio 2013\Projects\AllColorsImage\AllColorsImage\obj\Debug\AllColorsImage.dll
+c:\users\justin\documents\visual studio 2013\Projects\AllColorsImage\AllColorsImage\obj\Debug\AllColorsImage.pdb

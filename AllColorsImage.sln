@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllColorsImage", "AllColorsImage\AllColorsImage.csproj", "{3C23D0B0-F269-4785-A6D3-D32FB1D74D8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runner", "Runner\Runner.csproj", "{383AFF63-B1D9-4375-87C9-4A293D2AF4CB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3C23D0B0-F269-4785-A6D3-D32FB1D74D8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C23D0B0-F269-4785-A6D3-D32FB1D74D8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C23D0B0-F269-4785-A6D3-D32FB1D74D8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C23D0B0-F269-4785-A6D3-D32FB1D74D8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{383AFF63-B1D9-4375-87C9-4A293D2AF4CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{383AFF63-B1D9-4375-87C9-4A293D2AF4CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{383AFF63-B1D9-4375-87C9-4A293D2AF4CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{383AFF63-B1D9-4375-87C9-4A293D2AF4CB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
