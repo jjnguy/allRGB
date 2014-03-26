@@ -61,12 +61,53 @@ namespace AllColorsImage
             }
         }
 
+        private Color GetColorAbove1(int x, int y, Color[,] pxls)
+        {
+            var up = y == 0 ? conf.BorderColor : pxls[x, y - 1];
+            var twoUp = y < 2 ? conf.BorderColor : pxls[x, y - 2];
+            var left = x == 0 ? conf.BorderColor : pxls[x - 1, y];
+            var twoLeft = x < 2 ? conf.BorderColor : pxls[x - 2, y];
+            var upLeft = y == 0 || x == 0 ? conf.BorderColor : pxls[x - 1, y - 1];
+            return Avg(up, twoUp, left, twoLeft, upLeft);
+        }
+
+        private static Random r = new Random();
+        private Color GetColorAbove2(int x, int y, Color[,] pxls)
+        {
+            var up = y == 0 ? conf.BorderColor : pxls[x, y - 1];
+            var left = x == 0 ? conf.BorderColor : pxls[x - 1, y];
+            var random = x < 1 || y < 1 ? conf.BorderColor : pxls[r.Next(Math.Max(0, 0), x - 1), r.Next(Math.Max(0, y - 2 * y), y - 1)];
+            return Avg(up, up, left, left, random);
+        }
+
         private Color GetColorAbove(int x, int y, Color[,] pxls)
         {
-            var c1 = y == 0 ? conf.BorderColor : pxls[x, y - 1];
-            var c2 = x == 0 ? conf.BorderColor : pxls[x - 1, y];
-            var c3 = y == 0 || x == 0 ? conf.BorderColor : pxls[x - 1, y - 1];
-            return Color.FromArgb(Avg(c1.R, c2.R, c3.R), Avg(c1.G, c2.G, c3.G), Avg(c1.B, c2.B, c3.B));
+            var up = y == 0 ? Color.Blue : pxls[x, y - 1];
+            var left = x == 0 ? Color.Blue : pxls[x - 1, y];
+            var upLeft = y == 0 || x == 0 ? Color.Blue : pxls[x - 1, y - 1];
+            return Avg(up, left, upLeft.Invert());
+        }
+
+        private Color GetColorAbove3(int x, int y, Color[,] pxls)
+        {
+            var up = y == 0 ? conf.BorderColor : pxls[x, y - 1];
+            var left = x == 0 ? conf.BorderColor : pxls[x - 1, y];
+            var upLeft = y == 0 || x == 0 ? conf.BorderColor : pxls[x - 1, y - 1];
+            return Avg(up, left.Invert(), left, left, left, upLeft, upLeft, upLeft, upLeft, upLeft, upLeft);
+        }
+
+        private static Color Avg(params Color[] clrs)
+        {
+            var rs = 0;
+            var gs = 0;
+            var bs = 0;
+            foreach (var clr in clrs)
+            {
+                rs += clr.R;
+                gs += clr.G;
+                bs += clr.B;
+            }
+            return Color.FromArgb(rs/clrs.Length, gs/clrs.Length, bs/clrs.Length);
         }
 
         private static byte Avg(params int[] bytes)
@@ -76,9 +117,9 @@ namespace AllColorsImage
 
         private static Color GetAndRemoveCloseColor(Color ToCompare, List<Color> TheList)
         {
-            if (TheList.Count == 0) return Color.Black;
-            var threshold = 500;
-            var minDiff = 1000000000;
+            if (TheList.Count == 0) throw new Exception("Something went wrong");
+            var threshold = 0;
+            var minDiff = int.MaxValue;
             while (true)
             {
                 for (var i = 0; i < TheList.Count; i++)
@@ -150,6 +191,11 @@ namespace AllColorsImage
             var g = c1.G - c2.G;
             var b = c1.B - c2.B;
             return r * r + g * g + b * b;
+        }
+
+        public static Color Invert(this Color c)
+        {
+            return Color.FromArgb(255 - c.R, 255 - c.G, 255 - c.B);
         }
     }
 }
