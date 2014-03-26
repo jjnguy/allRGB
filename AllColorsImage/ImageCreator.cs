@@ -79,7 +79,7 @@ namespace AllColorsImage
         private static Color GetAndRemoveCloseColor(Color ToCompare, List<Color> TheList)
         {
             if (TheList.Count == 0) return Color.Black;
-            var threshold = 1000d;
+            var threshold = 500d;
             var minDiff = 1000000000;
             while (true)
             {
