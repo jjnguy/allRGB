@@ -17,16 +17,11 @@ namespace AllColorsImage
             this.conf = conf;
         }
 
-        const int ByteSize = 256;
-        static readonly int NumColors = (int)Math.Pow(2, 5);
-        readonly int ColorGap = ByteSize / NumColors;
-
         public void SaveImage(string location)
         {
             var pxls = new Color[conf.Width, conf.Height];
-            var rand = new Random();
 
-            var sorted = conf.GenerateAllColors().OrderBy(c => rand.Next()).ToList();
+            var random = conf.GenerateAllColors().OrderBy(c => Guid.NewGuid()).ToList();
 
             for (var x = 0; x < conf.Width; x++)
             {
@@ -34,8 +29,7 @@ namespace AllColorsImage
                 var y = 0;
                 while (x2 >= 0 && y < conf.Height)
                 {
-                    var nextColor = GetAndRemoveCloseColor(GetColorAbove(x2, y, pxls), sorted);
-                    // Console.WriteLine("Writing pxl at ({0}, {1})", x2, y);
+                    var nextColor = GetAndRemoveCloseColor(GetColorAbove(x2, y, pxls), random);
                     pxls[x2, y] = nextColor;
                     x2--;
                     y++;
@@ -47,7 +41,7 @@ namespace AllColorsImage
                 var x = conf.Width - 1;
                 while (x > conf.Width - conf.Height && y2 < conf.Height)
                 {
-                    var nextColor = GetAndRemoveCloseColor(GetColorAbove(x, y2, pxls), sorted);
+                    var nextColor = GetAndRemoveCloseColor(GetColorAbove(x, y2, pxls), random);
                     pxls[x, y2] = nextColor;
                     x--;
                     y2++;
@@ -67,12 +61,17 @@ namespace AllColorsImage
             }
         }
 
-        private static Color GetColorAbove(int x, int y, Color[,] pxls)
+        private Color GetColorAbove(int x, int y, Color[,] pxls)
         {
-            var c1 = y == 0 ? Color.Black : pxls[x, y - 1];
-            var c2 = x == 0 ? Color.Black : pxls[x - 1, y];
-            var c3 = y == 0 || x == 0 ? Color.Black : pxls[x - 1, y - 1];
-            return Color.FromArgb((c1.R + c2.R + c3.R) / 3, (c1.G + c2.G + c3.G) / 3, (c1.B + c2.B + c3.B) / 3);
+            var c1 = y == 0 ? conf.BorderColor : pxls[x, y - 1];
+            var c2 = x == 0 ? conf.BorderColor : pxls[x - 1, y];
+            var c3 = y == 0 || x == 0 ? conf.BorderColor : pxls[x - 1, y - 1];
+            return Color.FromArgb(Avg(c1.R, c2.R, c3.R), Avg(c1.G, c2.G, c3.G), Avg(c1.B, c2.B, c3.B));
+        }
+
+        private static byte Avg(params int[] bytes)
+        {
+            return (byte) Math.Round(bytes.Sum() / (double) bytes.Length);
         }
 
         private static Color GetAndRemoveCloseColor(Color ToCompare, List<Color> TheList)
@@ -111,6 +110,7 @@ namespace AllColorsImage
         public readonly int Height;
         public readonly int Width;
         public readonly int ColorGap;
+        public readonly Color BorderColor = Color.Black;
 
         private ImageCreatorConfig(int Height, int ColorGap) : this(Height, Height, ColorGap) { }
 
