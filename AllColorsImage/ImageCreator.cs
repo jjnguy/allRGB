@@ -25,9 +25,8 @@ namespace AllColorsImage
         {
             var pxls = new Color[conf.Width, conf.Height];
             var rand = new Random();
-            var allColors = conf.GenerateAllColors();
 
-            var sorted = allColors.OrderBy(c => rand.Next()).ToList();
+            var sorted = conf.GenerateAllColors().OrderBy(c => rand.Next()).ToList();
 
             for (var x = 0; x < conf.Width; x++)
             {
@@ -79,7 +78,7 @@ namespace AllColorsImage
         private static Color GetAndRemoveCloseColor(Color ToCompare, List<Color> TheList)
         {
             if (TheList.Count == 0) return Color.Black;
-            var threshold = 500d;
+            var threshold = 500;
             var minDiff = 1000000000;
             while (true)
             {
