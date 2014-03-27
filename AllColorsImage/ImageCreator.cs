@@ -61,7 +61,7 @@ namespace AllColorsImage
             }
         }
 
-        private Color GetColorAbove1(int x, int y, Color[,] pxls)
+        private Color GetColorAbove(int x, int y, Color[,] pxls)
         {
             var up = y == 0 ? conf.BorderColor : pxls[x, y - 1];
             var twoUp = y < 2 ? conf.BorderColor : pxls[x, y - 2];
@@ -80,7 +80,7 @@ namespace AllColorsImage
             return Avg(up, up, left, left, random);
         }
 
-        private Color GetColorAbove(int x, int y, Color[,] pxls)
+        private Color GetColorAbove4(int x, int y, Color[,] pxls)
         {
             var up = y == 0 ? Color.Blue : pxls[x, y - 1];
             var left = x == 0 ? Color.Blue : pxls[x - 1, y];
@@ -118,7 +118,7 @@ namespace AllColorsImage
         private static Color GetAndRemoveCloseColor(Color ToCompare, List<Color> TheList)
         {
             if (TheList.Count == 0) throw new Exception("Something went wrong");
-            var threshold = 0;
+            var threshold = 600;
             var minDiff = int.MaxValue;
             while (true)
             {
