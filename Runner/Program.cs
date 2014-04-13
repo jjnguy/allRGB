@@ -12,11 +12,15 @@ namespace Runner
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(Color.Black.Diff(Color.White));
-            var i = new ImageCreator(ImageCreatorConfig.c256_128);
+            var asciiCreator = new AsciArtCreator(@"C:\Users\Justin\Desktop\testIn.jpg");
+            asciiCreator.Go(@"C:\Users\Justin\Desktop\testOut.txt");
+            return;
+            var i = new AllRbgImageCreator(ImageCreatorConfig.c256_128);
+
             var startTime = DateTime.UtcNow;
             i.SaveImage(@"C:\Users\Justin\Desktop\newImage.png");
             var endTime = DateTime.UtcNow;
+
             Console.WriteLine(endTime.Subtract(startTime).TotalSeconds);
             Console.ReadKey();
         }

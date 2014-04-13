@@ -9,10 +9,10 @@ using System.Drawing.Imaging;
 
 namespace AllColorsImage
 {
-    public class ImageCreator
+    public class AllRbgImageCreator
     {
         private ImageCreatorConfig conf;
-        public ImageCreator(ImageCreatorConfig conf)
+        public AllRbgImageCreator(ImageCreatorConfig conf)
         {
             this.conf = conf;
         }
@@ -87,7 +87,7 @@ namespace AllColorsImage
         private static Color GetAndRemoveCloseColor(Color ToCompare, List<Color> TheList)
         {
             if (TheList.Count == 0) throw new Exception("Something went wrong");
-            var threshold = 600;
+            var threshold = 10;
             var minDiff = int.MaxValue;
             while (true)
             {
