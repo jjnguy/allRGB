@@ -12,17 +12,8 @@ namespace Runner
     {
         static void Main(string[] args)
         {
-            var asciiCreator = new AsciArtCreator(@"C:\Users\Justin\Desktop\testIn.jpg");
+            var asciiCreator = new AsciArtCreator(@"C:\Users\Justin\Desktop\example_images\reddit.bmp");
             asciiCreator.Go(@"C:\Users\Justin\Desktop\testOut.txt");
-            return;
-            var i = new AllRbgImageCreator(ImageCreatorConfig.c256_128);
-
-            var startTime = DateTime.UtcNow;
-            i.SaveImage(@"C:\Users\Justin\Desktop\newImage.png");
-            var endTime = DateTime.UtcNow;
-
-            Console.WriteLine(endTime.Subtract(startTime).TotalSeconds);
-            Console.ReadKey();
         }
     }
 }

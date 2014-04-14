@@ -11,45 +11,42 @@ namespace AllColorsImage
 {
     public class AsciArtCreator
     {
-        private string location;
+        private string imageLocation;
 
         public AsciArtCreator(string ImageLocation)
         {
-            this.location = ImageLocation;
+            this.imageLocation = ImageLocation;
         }
 
-        private string[] pixels = new[]{
-            " ",
-            " ",
-            ".,-",
-            "_ivc=!/|\\~",
-            "gjez2]/(YL)t[+T7Vf",
-            "mdK4ZGbNDXY5P*Q",
-            "W8KMA",
-            "#%$"
-        };
-        Random r = new Random();
+        private string pixels = " .-+*wGHM#&%";
+
         public void Go(string saveLocation)
         {
-            var image = new Bitmap(location);
-            using (var fout = new StreamWriter(saveLocation))
+            var img = new Bitmap(imageLocation);
+            using (var wrtr = new StreamWriter(saveLocation))
             {
-                var height = image.Height;
-                var width = image.Width;
-
-                for (var y = 0; y < height; y++)
+                for (var y = 0; y < img.Height; y++)
                 {
-                    for (var x = 0; x < width; x++)
+                    for (var x = 0; x < img.Width; x++)
                     {
-                        var c = image.GetPixel(x, y);
-                        var brightness = Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068) / 255 * (pixels.Length - 1);
-                        var pxlGrp = pixels[pixels.Length - (int)Math.Round(brightness) - 1];
-                        var pxl = pxlGrp[r.Next(0,pxlGrp.Length)];
-                        fout.Write(pxl + "" + pxl);
+                        var color = img.GetPixel(x, y);
+                        var brightness = Brightness(color);
+                        var idx = brightness / 255 * (pixels.Length - 1);
+                        var pxl = pixels[pixels.Length - (int)Math.Round(idx) - 1];
+                        wrtr.Write(pxl);
+                        wrtr.Write(pxl);
                     }
-                    fout.WriteLine();
+                    wrtr.WriteLine();
                 }
             }
+        }
+
+        private static double Brightness(Color c)
+        {
+            return Math.Sqrt(
+               c.R * c.R * .241 +
+               c.G * c.G * .691 +
+               c.B * c.B * .068);
         }
     }
 }
