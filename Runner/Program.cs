@@ -12,8 +12,8 @@ namespace Runner
     {
         static void Main(string[] args)
         {
-            var asciiCreator = new AsciArtCreator(@"C:\Users\Justin\Desktop\example_images\reddit.bmp");
-            asciiCreator.Go(@"C:\Users\Justin\Desktop\testOut.txt");
+            var allrgb = new AllRbgImageCreator(ImageCreatorConfig.c256_128);
+            allrgb.SaveImage(@"C:\Users\Justin\Desktop\newMethod.png");
         }
     }
 }
