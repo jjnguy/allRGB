@@ -1,195 +1,183 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 </head>
+
 <body>
-    <canvas id="colors"></canvas>
-    <script>
-    
+  <canvas id="colors"></canvas>
+  <script>
+
     var configOptions = {
-        SMALL: {
-            colorGap: 8,
-            pixelSize: 5,
-            logicalWidth: 256,
-            logicalHeight: 128
-        },
-        MEDIUM: {
-            colorGap: 4,
-            pixelSize: 2,
-            logicalWidth: 512,
-            logicalHeight: 512
-        }
+      SMALL: {
+        colorGap: 8,
+        pixelSize: 5,
+        logicalWidth: 256,
+        logicalHeight: 128
+      },
+      MEDIUM: {
+        colorGap: 4,
+        pixelSize: 2,
+        logicalWidth: 512,
+        logicalHeight: 512
+      }
     }
 
     class AllColorPainter {
-        constructor($canvas, config) {
-            this.$canvas = $canvas;
-            this.config = config;
+      constructor($canvas, config) {
+        this.$canvas = $canvas;
+        this.config = config;
 
-            this.$canvas.width = this.config.pixelSize * config.logicalWidth;
-            this.$canvas.height = this.config.pixelSize * config.logicalHeight;
+        this.$canvas.width = this.config.pixelSize * config.logicalWidth;
+        this.$canvas.height = this.config.pixelSize * config.logicalHeight;
 
-            this.ctx = this.$canvas.getContext('2d');
+        this.ctx = this.$canvas.getContext('2d');
 
-            this.ctx.fillStyle = 'black';
-            this.ctx.fillRect(0, 0, $canvas.width, $canvas.height);
+        this.ctx.fillStyle = 'black';
+        this.ctx.fillRect(0, 0, $canvas.width, $canvas.height);
 
-            this.imageData = new SimpleImageData(this.ctx.getImageData(0, 0, this.$canvas.width, this.$canvas.height), this.config.pixelSize);
+        this.imageData = new SimpleImageData(this.ctx.getImageData(0, 0, this.$canvas.width, this.$canvas.height), this.config.pixelSize);
+      }
+
+      paintAllColors(startPoint) {
+        var allColors = shuffle(this.allColors());
+        var currentColor = Color.random();
+        var wallColor = new Color(0, 0, 0);
+
+        var pointsToFill = new SingleQueue();
+        pointsToFill.push(startPoint);
+
+        while (pointsToFill.length() != 0) {
+          var nextPoint = pointsToFill.pop();
+          var colorsToAvg = [];
+          var js = shuffle([-1, 0, 1]);
+          var config = this.config;
+          var imageData = this.imageData;
+          shuffle([-1, 0, 1]).forEach(function (i) {
+            shuffle([-1, 0, 1]).forEach(function (j) {
+              var point = { x: nextPoint.x + i, y: nextPoint.y + j };
+              if (point.x < 0 || point.x >= config.logicalWidth || point.y < 0 || point.y >= config.logicalHeight) {
+                return;
+              }
+              var existingColor = imageData.getColor(point.x, point.y);
+              if (existingColor == null) {
+                pointsToFill.push(point);
+              } else {
+                colorsToAvg.push(existingColor);
+              }
+            });
+          });
+
+          var nextColor = selectColor(allColors, Color.average(colorsToAvg), 300);
+          this.imageData.setColor(nextPoint.x, nextPoint.y, nextColor);
         }
 
-        paintAllColorsStripped() {
+        this.ctx.putImageData(this.imageData.imageData, 0, 0);
+      }
 
-            var allColors = shuffle(this.allColors());
-            var currentColor = Color.random();
-            var wallColor = new Color(0, 0, 0);
-
-            for (var y = 0; y < this.config.logicalHeight; y++) {
-                for (var x = 0; x < this.config.logicalWidth; x++){
-                    currentColor = selectColor(allColors, currentColor);
-                    this.imageData.setColor(x, y, currentColor);
-                }
+      allColors() {
+        var result = [];
+        for (var r = 0; r < 256; r += this.config.colorGap) {
+          for (var g = 0; g < 256; g += this.config.colorGap) {
+            for (var b = 0; b < 256; b += this.config.colorGap) {
+              result.push(new Color(r, g, b));
             }
-
-            this.ctx.putImageData(this.imageData.imageData, 0, 0);
+          }
         }
-
-        paintAllColors(startPoint) {
-            var allColors = shuffle(this.allColors());
-            var currentColor = Color.random();
-            var wallColor = new Color(0, 0, 0);
-
-            var pointsToFill = new SingleQueue();
-            pointsToFill.push(startPoint);
-
-            while(pointsToFill.length() != 0) {
-                var nextPoint = pointsToFill.pop();
-                var colorsToAvg = [];
-                for(var i = -1; i < 2; i++) {
-                    for(var j = -1; j < 2; j++) {
-                        var point = { x: nextPoint.x + i, y: nextPoint.y + j};
-                        if (point.x < 0 || point.x >= this.config.logicalWidth || point.y < 0 || point.y >= this.config.logicalHeight) {
-                            continue;
-                        }
-                        var existingColor = this.imageData.getColor(point.x, point.y);
-                        if (existingColor == null) {
-                            pointsToFill.push(point);
-                        } else {
-                            colorsToAvg.push(existingColor);
-                        }
-                    }
-                }
-
-                var nextColor = selectColor(allColors, Color.average(colorsToAvg), 300);
-                this.imageData.setColor(nextPoint.x, nextPoint.y, nextColor);
-            }
-
-            this.ctx.putImageData(this.imageData.imageData, 0, 0);
-        }
-
-        allColors() {
-            var result = [];
-            for(var r = 0; r < 256; r+=this.config.colorGap) {
-                for (var g = 0; g < 256; g+=this.config.colorGap) {
-                    for(var b = 0; b < 256; b+=this.config.colorGap) {
-                        result.push(new Color(r,g,b));
-                    }
-                }
-            }
-            return result;
-        }
+        return result;
+      }
     }
 
     class SingleQueue {
-        constructor() {
-            this.data = [];
-            this.tracker = {};
-        }
+      constructor() {
+        this.data = [];
+        this.tracker = {};
+      }
 
-        length() {
-            return this.data.length;
-        }
+      length() {
+        return this.data.length;
+      }
 
-        push(point) {
-            if (this.tracker[point.x + '-' + point.y]) return;
-            this.tracker[point.x + '-' + point.y] = true;
-            this.data.push(point);
+      push(point) {
+        if (this.tracker[point.x + '-' + point.y]) return;
+        this.tracker[point.x + '-' + point.y] = true;
+        this.data.push(point);
+      }
+      pop() {
+        return this.data.shift();
+        if (getRandomInt(0, 2) == 0) {
+          return this.data.shift();
+        } else {
+          return this.data.pop();
         }
-        pop() {
-            return this.data.shift();
-            if (getRandomInt(0, 2) == 0) {
-                return this.data.shift();
-            } else {
-                return this.data.pop();
-            }
-        }
+      }
     }
 
     class SimpleImageData {
-        constructor(imageData, scale) {
-            this.imageData = imageData;
-            this.scale = scale;
-            this.tracker = {};
-        }
+      constructor(imageData, scale) {
+        this.imageData = imageData;
+        this.scale = scale;
+        this.tracker = {};
+      }
 
-        setColor(x, y, color) {
-            var offset = this.calculateOffset(x, y);
-            for(var subPy = 0; subPy < this.scale; subPy++) {
-                for(var subPx = 0; subPx < this.scale; subPx++) {
-                    this.imageData.data[offset + 0 + 4 * subPx + 4 * subPy * this.imageData.width] = color.r;
-                    this.imageData.data[offset + 1 + 4 * subPx + 4 * subPy * this.imageData.width] = color.g;
-                    this.imageData.data[offset + 2 + 4 * subPx + 4 * subPy * this.imageData.width] = color.b;
-                }
-            }
-            this.tracker[x + '-' + y] = true;
+      setColor(x, y, color) {
+        var offset = this.calculateOffset(x, y);
+        for (var subPy = 0; subPy < this.scale; subPy++) {
+          for (var subPx = 0; subPx < this.scale; subPx++) {
+            this.imageData.data[offset + 0 + 4 * subPx + 4 * subPy * this.imageData.width] = color.r;
+            this.imageData.data[offset + 1 + 4 * subPx + 4 * subPy * this.imageData.width] = color.g;
+            this.imageData.data[offset + 2 + 4 * subPx + 4 * subPy * this.imageData.width] = color.b;
+          }
         }
+        this.tracker[x + '-' + y] = true;
+      }
 
-        getColor(x, y) {
-            if (!this.tracker[x + '-' + y]) return null;
-            var offset = this.calculateOffset(x, y);
-            return new Color(
-                this.imageData.data[offset + 0],
-                this.imageData.data[offset + 1],
-                this.imageData.data[offset + 2]
-            );
-        }
+      getColor(x, y) {
+        if (!this.tracker[x + '-' + y]) return null;
+        var offset = this.calculateOffset(x, y);
+        return new Color(
+          this.imageData.data[offset + 0],
+          this.imageData.data[offset + 1],
+          this.imageData.data[offset + 2]
+        );
+      }
 
-        calculateOffset(x, y) {
-            return (y * this.imageData.width + x) * 4 * this.scale;
-        }
+      calculateOffset(x, y) {
+        return (y * this.imageData.width + x) * 4 * this.scale;
+      }
     }
 
     class Color {
-        constructor(r,g,b) {
-            this.r = r;
-            this.b = b;
-            this.g = g;
-            this.string = `#${toPaddedHex(this.r)}${toPaddedHex(this.g)}${toPaddedHex(this.b)}`;
-        }
+      constructor(r, g, b) {
+        this.r = r;
+        this.b = b;
+        this.g = g;
+        this.string = `#${toPaddedHex(this.r)}${toPaddedHex(this.g)}${toPaddedHex(this.b)}`;
+      }
 
-        toString() {
-            return this.string;
-        }
+      toString() {
+        return this.string;
+      }
 
-        rgbDiff(c2)
-        {
-            var r = this.r - c2.r;
-            var g = this.g - c2.g;
-            var b = this.b - c2.b;
-            return r * r + g * g + b * b;
-        }
+      rgbDiff(c2) {
+        var r = this.r - c2.r;
+        var g = this.g - c2.g;
+        var b = this.b - c2.b;
+        return r * r + g * g + b * b;
+      }
 
-        static random() {
-            return new Color(getRandomInt(0, 256), getRandomInt(0, 256), getRandomInt(0, 256));
-        }
+      static random() {
+        return new Color(getRandomInt(0, 256), getRandomInt(0, 256), getRandomInt(0, 256));
+      }
 
-        static average(colors) {
-            if (colors.length == 0) return Color.random();
-            var result = {r:0, g:0, b:0};
-            colors.forEach(function(next){
-                result = {r:result.r + next.r, g:result.g + next.g, b:result.b + next.b};
-            });
-            return new Color(result.r / colors.length, result.g / colors.length,result.b / colors.length);
-        }
+      static average(colors) {
+        if (colors.length == 0) return Color.random();
+        var result = { r: 0, g: 0, b: 0 };
+        colors.forEach(function (next) {
+          result = { r: result.r + next.r, g: result.g + next.g, b: result.b + next.b };
+        });
+        return new Color(result.r / colors.length, result.g / colors.length, result.b / colors.length);
+      }
     }
 
     var $canvas = document.getElementById('colors');
@@ -197,87 +185,88 @@
     var cfg = configOptions.SMALL;
     var colorPainter = new AllColorPainter($canvas, cfg);
 
-    colorPainter.paintAllColors({x: getRandomInt(0, cfg.logicalWidth), y: getRandomInt(0, cfg.logicalHeight)});
+    colorPainter.paintAllColors({ x: getRandomInt(0, cfg.logicalWidth), y: getRandomInt(0, cfg.logicalHeight) });
 
     function selectColor(allColors, previousColor, threshold) {
-        if (threshold > 100000) return allColors.shift();
+      if (threshold > 100000) return allColors.shift();
 
-        for (var diffIx = 0; diffIx < allColors.length; diffIx++) {
-            var diff = allColors[diffIx].rgbDiff(previousColor);
-            if (diff < threshold) {
-                return allColors.splice(diffIx, 1)[0];
-            }
+      for (var diffIx = 0; diffIx < allColors.length; diffIx++) {
+        var diff = allColors[diffIx].rgbDiff(previousColor);
+        if (diff < threshold) {
+          return allColors.splice(diffIx, 1)[0];
         }
-        return selectColor(allColors, previousColor, threshold * 5);
+      }
+      return selectColor(allColors, previousColor, threshold * 5);
     }
 
     function getRandomInt(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
     }
 
-// https://stackoverflow.com/a/6274381/2598
-/**
- * Shuffles array in place.
- * @param {Array} a items An array containing the items.
- */
- function shuffle(a) {
-    var j, x, i;
-    for (i = a.length - 1; i > 0; i--) {
+    // https://stackoverflow.com/a/6274381/2598
+    /**
+     * Shuffles array in place.
+     * @param {Array} a items An array containing the items.
+     */
+    function shuffle(a) {
+      var j, x, i;
+      for (i = a.length - 1; i > 0; i--) {
         j = Math.floor(Math.random() * (i + 1));
         x = a[i];
         a[i] = a[j];
         a[j] = x;
+      }
+      return a;
     }
-    return a;
-}
 
-    function toPaddedHex(num){
-        var result = num.toString(16);
-        if (result.length == 1) {
-            result = '0' + result;
+    function toPaddedHex(num) {
+      var result = num.toString(16);
+      if (result.length == 1) {
+        result = '0' + result;
+      }
+      return result;
+    }
+
+    /**
+     * Converts an RGB color value to HSL. Conversion formula
+     * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+     * Assumes r, g, and b are contained in the set [0, 255] and
+     * returns h, s, and l in the set [0, 1].
+     *
+     * @param   Number  r       The red color value
+     * @param   Number  g       The green color value
+     * @param   Number  b       The blue color value
+     * @return  Array           The HSL representation
+     */
+    function rgbToHsl(color) {
+      var r = color.r;
+      var g = color.g;
+      var b = color.b;
+      r /= 255, g /= 255, b /= 255;
+
+      var max = Math.max(r, g, b), min = Math.min(r, g, b);
+      var h, s, l = (max + min) / 2;
+
+      if (max == min) {
+        h = s = 0; // achromatic
+      } else {
+        var d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+        switch (max) {
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
         }
-        return result;
+
+        h /= 6;
+      }
+
+      return [h, s, l];
     }
-
-/**
- * Converts an RGB color value to HSL. Conversion formula
- * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
- * Assumes r, g, and b are contained in the set [0, 255] and
- * returns h, s, and l in the set [0, 1].
- *
- * @param   Number  r       The red color value
- * @param   Number  g       The green color value
- * @param   Number  b       The blue color value
- * @return  Array           The HSL representation
- */
- function rgbToHsl(color) {
-    var r = color.r;
-        var g = color.g;
-        var b = color.b;
-  r /= 255, g /= 255, b /= 255;
-
-  var max = Math.max(r, g, b), min = Math.min(r, g, b);
-  var h, s, l = (max + min) / 2;
-
-  if (max == min) {
-    h = s = 0; // achromatic
-  } else {
-    var d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-    switch (max) {
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: h = (b - r) / d + 2; break;
-      case b: h = (r - g) / d + 4; break;
-    }
-
-    h /= 6;
-  }
-
-  return [ h, s, l ];
-}
-    </script>
+  </script>
 </body>
+
 </html>
