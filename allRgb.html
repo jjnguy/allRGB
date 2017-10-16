@@ -50,7 +50,6 @@
         while (pointsToFill.length() != 0) {
           var nextPoint = pointsToFill.pop();
           var colorsToAvg = [];
-          var js = shuffle([-1, 0, 1]);
           var config = this.config;
           var imageData = this.imageData;
           shuffle([-1, 0, 1]).forEach(function (i) {
@@ -68,7 +67,7 @@
             });
           });
 
-          var nextColor = selectColor(allColors, Color.average(colorsToAvg), 300);
+          var nextColor = selectColor(allColors, Color.average(colorsToAvg), 100);
           this.imageData.setColor(nextPoint.x, nextPoint.y, nextColor);
         }
 
@@ -105,10 +104,10 @@
       }
       pop() {
         return this.data.shift();
-        if (getRandomInt(0, 2) == 0) {
-          return this.data.shift();
-        } else {
+        if (getRandomInt(0, 4) == 0) {
           return this.data.pop();
+        } else {
+          return this.data.shift();
         }
       }
     }
@@ -186,6 +185,7 @@
     var colorPainter = new AllColorPainter($canvas, cfg);
 
     colorPainter.paintAllColors({ x: getRandomInt(0, cfg.logicalWidth), y: getRandomInt(0, cfg.logicalHeight) });
+    //colorPainter.paintAllColors({ x: 0, y: 0 });
 
     function selectColor(allColors, previousColor, threshold) {
       if (threshold > 100000) return allColors.shift();
@@ -196,7 +196,7 @@
           return allColors.splice(diffIx, 1)[0];
         }
       }
-      return selectColor(allColors, previousColor, threshold * 5);
+      return selectColor(allColors, previousColor, threshold * 100);
     }
 
     function getRandomInt(min, max) {
