@@ -8,6 +8,30 @@
   <canvas id="colors"></canvas>
   <script>
 
+    function selectColor(allColors, previousColor, threshold) {
+      if (threshold > 100000) return allColors.shift();
+
+      for (var diffIx = 0; diffIx < allColors.length; diffIx++) {
+        var diff = allColors[diffIx].rgbDiff(previousColor);
+        if (diff < threshold) {
+          return allColors.splice(diffIx, 1)[0];
+        }
+      }
+      return selectColor(allColors, previousColor, threshold * 100);
+    }
+
+    function selectColor_smooth(allColors, previousColor, threshold) {
+      if (threshold > 100000) return allColors.shift();
+
+      allColors.sort(function compare(one, two){
+        var diffOne = one.rgbDiff(previousColor);
+        var diffTwo = two.rgbDiff(previousColor);
+        return diffOne - diffTwo;
+      });
+
+      return allColors.shift();
+    }    
+    
     var configOptions = {
       SMALL: {
         colorGap: 8,
@@ -40,7 +64,7 @@
       }
 
       paintAllColors(startPoint) {
-        var allColors = shuffle(this.allColors());
+        var allColors = (this.allColors()).reverse();
         var currentColor = Color.random();
         var wallColor = new Color(0, 0, 0);
 
@@ -91,6 +115,8 @@
       constructor() {
         this.data = [];
         this.tracker = {};
+        this.pops = 0;
+        this.dir = 'shift';
       }
 
       length() {
@@ -104,7 +130,11 @@
       }
       pop() {
         return this.data.shift();
-        if (getRandomInt(0, 4) == 0) {
+        if (this.pops % 500 == 0) {
+          this.dir = this.dir == 'pop' ? 'shift' : 'pop'
+        }
+        this.pops++;
+        if (this.dir == 'pop') {
           return this.data.pop();
         } else {
           return this.data.shift();
@@ -186,18 +216,6 @@
 
     colorPainter.paintAllColors({ x: getRandomInt(0, cfg.logicalWidth), y: getRandomInt(0, cfg.logicalHeight) });
     //colorPainter.paintAllColors({ x: 0, y: 0 });
-
-    function selectColor(allColors, previousColor, threshold) {
-      if (threshold > 100000) return allColors.shift();
-
-      for (var diffIx = 0; diffIx < allColors.length; diffIx++) {
-        var diff = allColors[diffIx].rgbDiff(previousColor);
-        if (diff < threshold) {
-          return allColors.splice(diffIx, 1)[0];
-        }
-      }
-      return selectColor(allColors, previousColor, threshold * 100);
-    }
 
     function getRandomInt(min, max) {
       min = Math.ceil(min);
