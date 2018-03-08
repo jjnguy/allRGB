@@ -12,8 +12,9 @@ namespace Runner
     {
         static void Main(string[] args)
         {
-            var allrgb = new AllRbgImageCreator(ImageCreatorConfig.c256_128);
-            allrgb.SaveImage(@"C:\Users\Justin\Desktop\newMethod.png");
+            RandomPixel.Run();
+            //var allrgb = new AllRbgImageCreator(ImageCreatorConfig.c256_128);
+            //allrgb.SaveImage(@"C:\Users\Justin\Desktop\newMethod.png");
         }
     }
 }
