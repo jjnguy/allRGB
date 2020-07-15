@@ -75,7 +75,8 @@
         var nextColor = selectColor(this.remainingColors, Color.average(colorsToAvg), 100);
         colorsToAvg = [];
         this.imageData.setColor(nextPoint.x, nextPoint.y, nextColor);
-        this.ctx.putImageData(this.imageData.imageData, 0, 0);
+        this.ctx.fillStyle = nextColor.string;
+        this.ctx.fillRect(nextPoint.x * this.config.pixelSize, nextPoint.y * this.config.pixelSize, this.config.pixelSize, this.config.pixelSize);
       }
 
       paintAllColors(startPoint) {
@@ -87,6 +88,12 @@
 
       runFrame() {
         this.advance();
+        if (this.pointsToFill.length() != 0) {
+          this.advance();
+        }
+        if (this.pointsToFill.length() != 0) {
+          this.advance();
+        }
         if (this.pointsToFill.length() != 0) {
           setTimeout(() => {
             this.runFrame();
